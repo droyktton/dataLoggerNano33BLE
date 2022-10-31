@@ -13,7 +13,7 @@ Componentes:
 * SD reader
 * Protoboard
 
-![alt text](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/circuito.jpg?raw=true)
+![circuito](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/circuito.jpg?raw=true)
 
 Características
 
@@ -30,6 +30,8 @@ Características
  
 Apenas uno prende, está todo desactivado, pero imprime todos los datos en el serial monitor, así que tener celular a mano y lightblue para activar/desactivar escritura sd. Se pueden agregar comandos para averiguar el estado de la plaquita y activar/desactivar o ajustar otras cosas que vayamos agregando...
 
+![ble demo](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/demo.gif?raw=true)
+
 
 Cosas que encontre utiles
  * Para ver en google earth el csv
@@ -38,5 +40,5 @@ Cosas que encontre utiles
    * https://www.convertcsv.com/csv-to-kml.htm
 
 
-![alt text](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/paseo.jpg?raw=true)
+![gps demo](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/paseo.jpg?raw=true)
 
