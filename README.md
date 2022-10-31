@@ -11,7 +11,7 @@ Componentes:
 * SD reader
 * Protoboard
 
-![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+![alt text](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/circuito.jpg?raw=true)
 
 Características
 
@@ -34,4 +34,7 @@ Cosas que encontre utiles
    * gawk -F ',' '{print $1/1000000,",",$2/1000000}' GPSLOG.TXT > caminata.csv
    * y luego convertirlo a kml con esto
    * https://www.convertcsv.com/csv-to-kml.htm
+
+
+![alt text](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/paseo.jpg?raw=true)
 
