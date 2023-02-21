@@ -19,6 +19,7 @@ Características
 
 * Resolución de lat y lon a la millonésima de grado.
 * Imprime la Fecha y Hora (UTC) que da el gps.
+* Imprime aceleracion, velocidad angular, campo magnetico, valor medio y varianza en una ventana de tiempo.
 * BLE para controlar/averiguar remoto!: 
   * La red es "Tortuga Nano" y uno le puede mandar comandos para averiguar/cambiar cosas, haciendo "write" de estos strings (enLightBlue)
   * "sd" : te dice si esta escribiendo o no en la sd
@@ -38,6 +39,7 @@ Cosas que encontre utiles
    * gawk -F ',' '{print $1/1000000,",",$2/1000000}' GPSLOG.TXT > caminata.csv
    * y luego convertirlo a kml con esto
    * https://www.convertcsv.com/csv-to-kml.htm
+   * para leerlo con google earth, etc.
 
 
 ![gps demo](https://github.com/droyktton/dataLoggerNano33BLE/blob/main/paseo.jpg?raw=true)
