@@ -70,7 +70,7 @@ BLEStringCharacteristic  switchCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1
 // variables y funciones usadas para la comunicacion BLE
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
-bool sdWrite = false;
+bool sdWrite = true;
 bool bleWrite=false;
 
 
@@ -152,7 +152,7 @@ void setup()
 
 void loop()
 {
-    BLE.poll();
+    
     bool newData = false;
    
     unsigned long chars;
@@ -160,10 +160,10 @@ void loop()
   
     // make a string for assembling the data to log:
     String dataString = "";
+    String dataStringGPS = "";
   
     // aqui vamos a escribir las coordenadas en el SD
     File dataFile = SD.open("gpslog.txt", FILE_WRITE);
-  
   
     // vars para IMU
     float x, y, z;
@@ -175,44 +175,47 @@ void loop()
     a2x=a2y=a2z=g2x=g2y=g2z=m2x=m2y=m2z=0.0;
     na=ng=nm=0;
 
-    int Nsec=10;
+    int Nsec=30;
     // For Nsec seconds we parse GPS data and report some key values
-    for (unsigned long start = millis(); millis() - start < 1000*Nsec;)
-    {
-      while (Serial1.available())
+    for(int n=0;n<Nsec;n++){
+      BLE.poll();
+      for (unsigned long start = millis(); millis() - start < 1000;)
       {
-        char c = Serial1.read();
-        // Serial.write(c); // uncomment this line if you want to see the GPS data flowing
-        if (gps.encode(c)) // Did a new valid sentence come in?
-          newData = true;
-      }
-      if (IMU.accelerationAvailable()) {
-          IMU.readAcceleration(x, y, z);
-          ax+=x;ay+=y;az+=z;
-          a2x+=x*x;a2y+=y*y;a2z+=z*z;
-          na++;  
-      }        
-      if (IMU.gyroscopeAvailable()) {
-          IMU.readGyroscope(x, y, z);
-          gx+=x;gy+=y;gz+=z;  
-          g2x+=x*x;g2y+=y*y;g2z+=z*z;  
-          ng++;  
-      }        
-      if (IMU.magneticFieldAvailable()) {
-          IMU.readMagneticField(x, y, z);
-          mx+=x;my+=y;mz+=z;  
-          m2x+=x*x;m2y+=y*y;m2z+=z*z;  
-          nm++;  
+        while (Serial1.available())
+        {
+          char c = Serial1.read();
+          // Serial.write(c); // uncomment this line if you want to see the GPS data flowing
+          if (gps.encode(c)) // Did a new valid sentence come in?
+              newData = true;
+          }
+          if (IMU.accelerationAvailable()) {
+              IMU.readAcceleration(x, y, z);
+              ax+=x;ay+=y;az+=z;
+              a2x+=x*x;a2y+=y*y;a2z+=z*z;
+              na++;  
+          }        
+          if (IMU.gyroscopeAvailable()) {
+              IMU.readGyroscope(x, y, z);
+              gx+=x;gy+=y;gz+=z;  
+              g2x+=x*x;g2y+=y*y;g2z+=z*z;  
+              ng++;  
+          }        
+          if (IMU.magneticFieldAvailable()) {
+              IMU.readMagneticField(x, y, z);
+              mx+=x;my+=y;mz+=z;  
+              m2x+=x*x;m2y+=y*y;m2z+=z*z;  
+              nm++;  
+          }
       }
     }
-    
-    dataString+= String(ax/na)+" "+String(ay/na)+" "+String(az/na)+" ";   
-    dataString+= String(gx/ng)+" "+String(gy/ng)+" "+String(gz/ng)+" ";   
-    dataString+= String(mx/nm)+" "+String(my/na)+" "+String(mz/na)+" ";   
+        
+    dataString+= String(ax/na)+","+String(ay/na)+","+String(az/na)+",";   
+    dataString+= String(gx/ng)+","+String(gy/ng)+","+String(gz/ng)+",";   
+    dataString+= String(mx/nm)+","+String(my/na)+","+String(mz/na)+",";   
 
-    dataString+= String(a2x/na)+" "+String(a2y/na)+" "+String(a2z/na)+" ";   
-    dataString+= String(g2x/ng)+" "+String(g2y/ng)+" "+String(g2z/ng)+" ";   
-    dataString+= String(m2x/nm)+" "+String(m2y/na)+" "+String(m2z/na)+" ";   
+    dataString+= String(a2x/na)+","+String(a2y/na)+","+String(a2z/na)+",";   
+    dataString+= String(g2x/ng)+","+String(g2y/ng)+","+String(g2z/ng)+",";   
+    dataString+= String(m2x/nm)+","+String(m2y/na)+","+String(m2z/na)+",";   
   
    
   // solo si hay datos de gps
@@ -246,24 +249,33 @@ void loop()
     // los campos son: LAT, LON, SAR, PREC, HDOP, DATE, TIME 
     
     //dataString+= String(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat); 
-    dataString+= String(latitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : latitude); 
-    dataString += ",";
+    dataStringGPS += String(latitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : latitude); 
+    dataStringGPS += ",";
 
     //dataString+= String(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon);
-    dataString+= String(longitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : longitude);
-    dataString+= ",";
+    dataStringGPS += String(longitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : longitude);
+    dataStringGPS += ",";
 
-    dataString+= String(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
-    dataString+= ",";
+    dataStringGPS += String(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
+    dataStringGPS += ",";
 
-    dataString+= String(gps.hdop() == TinyGPS::GPS_INVALID_HDOP ? 0 : gps.hdop());
-    dataString+= ",";
+    dataStringGPS += String(gps.hdop() == TinyGPS::GPS_INVALID_HDOP ? 0 : gps.hdop());
+    dataStringGPS += ",";
 
-    dataString+= String(date == TinyGPS::GPS_INVALID_DATE ? 0.0 : int(date)); 
-    dataString += ",";
+    dataStringGPS += String(date == TinyGPS::GPS_INVALID_DATE ? 0.0 : int(date)); 
+    dataStringGPS += ",";
 
-    dataString+= String(time == TinyGPS::GPS_INVALID_TIME ? 0.0 : int(time)); 
+    dataStringGPS += String(time == TinyGPS::GPS_INVALID_TIME ? 0.0 : int(time)); 
     //dataString += ",";
+
+    dataString = dataString + dataStringGPS;
+
+    //Serial.println(dataString);
+
+    // notificar en BLE
+    if(bleWrite)
+    switchCharacteristic.writeValue(dataStringGPS.c_str());
+  }
 
     // escribir sobre SD
     // if the file is available, write to it:
@@ -275,15 +287,10 @@ void loop()
     else {
       Serial.println("error opening gpslog.txt, no pude imprimir");
     }
-
-    //Serial.println(dataString);
-
-    // notificar en BLE
-    if(bleWrite)
-    switchCharacteristic.writeValue(dataString.c_str());
-  }
-
+ 
   Serial.println(dataString);
+  if(bleWrite)
+    switchCharacteristic.writeValue(dataString.c_str());
 
   gps.stats(&chars, &sentences, &failed);
   Serial.print(" CHARS=");
