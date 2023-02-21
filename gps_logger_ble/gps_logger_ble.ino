@@ -215,8 +215,10 @@ void loop()
 
     dataString+= String(a2x/na)+","+String(a2y/na)+","+String(a2z/na)+",";   
     dataString+= String(g2x/ng)+","+String(g2y/ng)+","+String(g2z/ng)+",";   
-    dataString+= String(m2x/nm)+","+String(m2y/na)+","+String(m2z/na)+",";   
+    dataString+= String(m2x/nm)+","+String(m2y/nm)+","+String(m2z/nm)+",";   
   
+    dataString+= String(na)+","+String(ng)+","+String(nm)+",";   
+
    
   // solo si hay datos de gps
   if (newData)
